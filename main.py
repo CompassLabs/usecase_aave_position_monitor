@@ -64,8 +64,14 @@ for key in [
     merged.pop(key, None)
 
 merged['original_token_balance_on_2025-05-18-20:00'] = 1
-merged["profit"] =  float(merged["token_balance"])-1
+merged["profit"] =  round(float(merged["token_balance"])-1,9)
+
+merged["supply_apr_variable_rate"]=f"{round(float(merged['supply_apr_variable_rate'])*100,2)} %"
+merged["supply_apy_variable_rate"]=f"{round(float(merged['supply_apy_variable_rate'])*100,2)} %"
+merged["borrow_apr_variable_rate"]=f"{round(float(merged['borrow_apr_variable_rate'])*100,2)} %"
+merged["borrow_apy_variable_rate"]=f"{round(float(merged['borrow_apy_variable_rate'])*100,2)} %"
 
 df = pd.DataFrame([merged])
 df = df.transpose()
+df.columns=["values"]
 st.dataframe(df, use_container_width=True)
