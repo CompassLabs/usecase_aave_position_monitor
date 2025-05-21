@@ -5,20 +5,18 @@ from web3 import Web3
 from streamlit_autorefresh import st_autorefresh
 from compassapisdk import CompassAPISDK, models
 import pandas as pd
-#from decimal import Decimal
+# from decimal import Decimal
 
 
 load_dotenv()
+# Trigger a re-run every 2 seconds
+st_autorefresh(interval=2000, limit=None, key="refresh")
 
 st.title("Live Monitoring of Aave Position")
 
 rpc_url = os.environ["ARBITRUM_MAINNET_RPC_URL"]
 api_key = os.environ["COMPASS_API_KEY"]
 w3 = Web3(Web3.HTTPProvider(rpc_url))
-
-# count = st_autorefresh(interval=2000, limit=None, key="refresh")
-block_placeholder = st.empty()
-key_placeholder = st.empty()
 
 with CompassAPISDK(
     api_key_auth=api_key,
@@ -33,8 +31,7 @@ with CompassAPISDK(
     )
 
 
-# Trigger a re-run every 2 seconds
-st_autorefresh(interval=2000, limit=None, key="refresh")
+
 
 # while True:
 # now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -59,19 +56,27 @@ for key in [
     "borrow_apy_fixed_rate",
     "stable_borrow_rate_for_new_loans",
     "variable_borrow_rate",
-    "liquidity_rate"
+    "liquidity_rate",
 ]:
     merged.pop(key, None)
 
-merged['original_token_balance_on_2025-05-18-20:00'] = 1
-merged["profit"] =  round(float(merged["token_balance"])-1,9)
+merged["original_token_balance_on_2025-05-18-20:00"] = 1
+merged["profit"] = round(float(merged["token_balance"]) - 1, 9)
 
-merged["supply_apr_variable_rate"]=f"{round(float(merged['supply_apr_variable_rate'])*100,2)} %"
-merged["supply_apy_variable_rate"]=f"{round(float(merged['supply_apy_variable_rate'])*100,2)} %"
-merged["borrow_apr_variable_rate"]=f"{round(float(merged['borrow_apr_variable_rate'])*100,2)} %"
-merged["borrow_apy_variable_rate"]=f"{round(float(merged['borrow_apy_variable_rate'])*100,2)} %"
+merged["supply_apr_variable_rate"] = (
+    f"{round(float(merged['supply_apr_variable_rate']) * 100, 2)} %"
+)
+merged["supply_apy_variable_rate"] = (
+    f"{round(float(merged['supply_apy_variable_rate']) * 100, 2)} %"
+)
+merged["borrow_apr_variable_rate"] = (
+    f"{round(float(merged['borrow_apr_variable_rate']) * 100, 2)} %"
+)
+merged["borrow_apy_variable_rate"] = (
+    f"{round(float(merged['borrow_apy_variable_rate']) * 100, 2)} %"
+)
 
 df = pd.DataFrame([merged])
 df = df.transpose()
-df.columns=["values"]
+df.columns = ["values"]
 st.dataframe(df, use_container_width=True)
